@@ -10,8 +10,6 @@ function isHeadline(elem) {
     var siblings = Array.prototype.filter.call(parent.parentNode.children, function(child){
       return child !== parent;
     });
-    // console.log(elem);
-    // console.log(siblings);
     for (var sibling of siblings) {
       if (sibling.tagName === "A") {
         return true;
@@ -64,7 +62,7 @@ function loop() {
     if (isElementVisible(node) && isHeadline(node) && !node.classList.contains("__clickbait_link")) {
       console.log(node);
       node.classList.add("__clickbait_link");
-      var realUrl = decodeURIComponent(node.href).substring(30);
+      var realUrl = decodeURIComponent(node.href).substring(33);
       realUrl = realUrl.substring(0, realUrl.indexOf('&h='));
       var containerDiv = document.createElement('div');
       var spanContainer = node.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
