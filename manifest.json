@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Save A Click",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Provides explanations to clickbaity articles on Facebook so you don't waste clicks on them.",
   "permissions": [
     "*://saveaclick.herokuapp.com/*"
