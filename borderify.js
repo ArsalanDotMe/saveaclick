@@ -20,6 +20,13 @@ function isHeadline(elem) {
   }
 }
 
+function openWebModal(event) {
+  event.preventDefault();
+  console.log(event.currentTarget);
+  picoModal("Ah, the pitter patter of tiny feet in huge combat boots.").show();
+  return false;
+}
+
 function prepare() {
   var css = document.createElement("style");
   css.type = "text/css";
@@ -74,6 +81,7 @@ function loop() {
       btn.href = `http://saveaclick.herokuapp.com/?url=${encodeURIComponent(realUrl)}`;
       btn.setAttribute('target', '__blank');
       btn.innerText = 'Open';
+      btn.addEventListener("click", openWebModal, true);
       containerDiv.appendChild(btn);
       // node.parentNode.appendChild(btn);
 
