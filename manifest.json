@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Save A Click",
-  "version": "1.1",
+  "name": "Stop Clickbait",
+  "version": "1.2",
   "description": "Provides explanations to clickbaity articles on Facebook so you don't waste clicks on them.",
   "permissions": [
     "*://saveaclick.herokuapp.com/*"
@@ -20,7 +20,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.facebook.com/*"],
-      "js": ["borderify.js"]
+      "js": ["picoModal-2.3.0.min.js", "borderify.js"]
     }
   ],
   "background": {
