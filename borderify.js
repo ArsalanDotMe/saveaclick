@@ -1,5 +1,7 @@
 'use strict';
 
+const NoAnswerFillerText = 'No submissions yet';
+
 function isElementVisible(elem) {
   return elem.offsetParent !== null;
 }
@@ -22,33 +24,47 @@ function isHeadline(elem) {
 
 function openWebModal(event) {
   event.preventDefault();
-  console.log(event.currentTarget);
-  picoModal("Ah, the pitter patter of tiny feet in huge combat boots.").show();
+  var link = event.currentTarget;
+  picoModal(`
+    <iframe height="640" width="900" src="${event.currentTarget.href}"></iframe>
+  `).afterClose((modal) => {
+    modal.destroy();
+    console.log(link.getAttribute('data-realurl'));
+    console.log(link.getAttribute('data-answernode-id'));
+    chrome.runtime.sendMessage({ url: encodeURIComponent(link.getAttribute('data-realurl')), nodeId: link.getAttribute('data-answernode-id') });
+  }).show();
   return false;
 }
 
 function prepare() {
   var css = document.createElement("style");
   css.type = "text/css";
-  css.innerHTML = '.__clickbait_link { border: 1px solid red; } ';
+  css.innerHTML = '.__clickbait_link {  } ';
   css.innerHTML += `.__clickbait_button {
-    background-color: #9b4dca;
-    border: .1rem solid #9b4dca;
-    border-radius: .4rem;
-    color: #fff;
     cursor: pointer;
-    display: inline-block;
-    font-size: 0.8rem;
-    font-weight: 700;
     height: 1.8rem;
     letter-spacing: .1rem;
     line-height: 1.8rem;
-    padding: 0 1rem;
-    text-align: center;
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
     display: inline-block;
+
+    background-color: #f6f7f9;
+    color: #4b4f56;
+
+    border: 1px solid;
+    border-radius: 2px;
+    box-sizing: content-box;
+    font-family: helvetica, arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 8px;
+    position: relative;
+    text-align: center;
+    text-shadow: none;
+    vertical-align: middle;
+    border-color: #bbb;
   } `;
   css.innerHTML += `.__clickbait_text {
     display: inline-block;
@@ -69,20 +85,22 @@ function loop() {
     if (isElementVisible(node) && isHeadline(node) && !node.classList.contains("__clickbait_link")) {
       console.log(node);
       node.classList.add("__clickbait_link");
-      var realUrl = decodeURIComponent(node.href).substring(33);
+      var realUrl = decodeURIComponent(node.href);
+      realUrl = realUrl.substring(realUrl.indexOf('l.php?u=') + 'l.php?u='.length);
       realUrl = realUrl.substring(0, realUrl.indexOf('&h='));
       var containerDiv = document.createElement('div');
+      containerDiv.classList.add('__clickbait_container_div');
       var spanContainer = node.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
       spanContainer.insertBefore(containerDiv, spanContainer[1]);
       console.log(containerDiv);
 
       var btn = document.createElement('a');
       btn.classList.add('__clickbait_button');
-      btn.href = `http://saveaclick.herokuapp.com/?url=${encodeURIComponent(realUrl)}`;
+      btn.href = `https://saveaclick.herokuapp.com/?url=${encodeURIComponent(realUrl)}`;
       btn.setAttribute('target', '__blank');
       btn.innerText = 'Open';
       btn.addEventListener("click", openWebModal, true);
-      containerDiv.appendChild(btn);
+      
       // node.parentNode.appendChild(btn);
 
       var answerNode = document.createElement("p");
@@ -90,6 +108,11 @@ function loop() {
       answerNode.innerText = "#StopClickBait";
       answerNode.id = `__clickbait_ids_${(uniqueIds++)}`;
       // node.parentNode.appendChild(answerNode);
+
+      btn.setAttribute('data-answernode-id', answerNode.id);
+      btn.setAttribute('data-realurl', realUrl);
+
+      containerDiv.appendChild(btn);
       containerDiv.appendChild(answerNode);
 
       chrome.runtime.sendMessage({ url: encodeURIComponent(realUrl), nodeId: answerNode.id });
